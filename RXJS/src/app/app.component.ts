@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Observable, Subscriber } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +28,69 @@ import { Component } from '@angular/core';
   `,
   styles: []
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
+  
   title = 'RXJS';
+
+  //metodo retorna promise
+  minhaPromise(nome: string) : Promise<string>
+  {
+    //resposta positiva ou negativa
+    return new Promise((resolve, reject)=>
+    {
+      if (nome =='Juliana')
+      {
+        setTimeout(() => {
+          resolve ('Seja bem vinda ' + nome);
+        }, 1000);
+      }
+      else
+      {
+        reject('Você não tem acesso');
+      }
+    })
+  }
+
+  minhaObservable(nome:string) : Observable<string>
+  {
+    return new Observable (Subscriber =>
+      {
+        if(nome==='Juliana')
+        {
+          //next: callback para o subscriber receber essa info
+        Subscriber.next('olá ' + nome);
+        Subscriber.next('olá de novo');
+        setTimeout(() => {
+          Subscriber.next('olá de novo com delay');
+        }, 5000);
+        }
+        else
+        {
+          Subscriber.error('Você não tem acesso, erro');
+        }
+        
+      });
+  }
+
+  //primeiro metodo chamado depois do construtor
+  ngOnInit(): void {
+    //throw new Error('Method not implemented.');
+    //chamada promise
+
+    //case sucesso
+    //this.minhaPromise('Juliana').then(resultado => console.log(resultado));
+    
+    //case erro + tratativa
+    //this.minhaPromise('José').then(resultado => console.log(resultado))
+    //  .catch(erro => console.log(erro));
+
+
+    //this.minhaObservable('').subscribe(resultado => console.log(resultado));
+
+    this.minhaObservable('Juliana')
+      .subscribe 
+      //primeira info após o subscribe é o resultado positivo, depois o negativo
+      (resultado => console.log(resultado),
+      erro => console.log(erro));
+  }
 }
